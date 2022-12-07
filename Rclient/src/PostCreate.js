@@ -6,7 +6,7 @@ export default () => {
     const [title, setTitle] = useState("");
     const onSubmit = (event) => {
         event.preventDefault();
-        axios.post('http://localhost:5200/posts', {title});
+        axios.post('http://localhost:5000/posts', {title});
         setTitle("")
     }
 
