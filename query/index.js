@@ -26,12 +26,8 @@ const posts = {}
         ]
     }
 }*/
-app.get("/posts", (req, res) => {
-    res.send(posts)
-})
 
-app.post("/event", (req, res) => {
-    const {type, data} = req.body;
+const handleEvent = (type, data) => {
     if(type === "PostCreated"){
         const {id, title} = data;
         posts[id] = {id, title, comments: []}
@@ -47,8 +43,24 @@ app.post("/event", (req, res) => {
         comment.status = status;
         comment.content = content;
     }
+}
+
+app.get("/posts", (req, res) => {
+    res.send(posts)
+})
+
+app.post("/event", (req, res) => {
+    const {type, data} = req.body;
+    handleEvent(type, data);
     console.log(posts)
     res.send({})
 })
 
-app.listen(5200, () => console.log("Query service listening on 5200"))
+app.listen(5200, async () => {
+    console.log("Query service listening on 5200");
+    const res = await axios.get("http://localhost:5300/event");
+    for(let event of res.data){
+        handleEvent(event.type, event.data)
+    }
+
+})
